@@ -15,8 +15,10 @@ Web-UI nur an 127.0.0.1 gebunden.
     cp .env.example .env
     mkdir -p consume export
     docker compose up -d
-    docker compose run --rm webserver createsuperuser
+    docker compose exec webserver python3 manage.py createsuperuser
 
 ## Stolperstellen
 - macOS: Homebrew-Cask docker-desktop installiert, App aber nie gestartet → CLI-Plugins
   (u. a. compose) waren tote Symlinks. Lösung: Docker Desktop einmal starten.
+- `PAPERLESS_OCR_MODE=skip` ist ab v3 ungültig (Warnung paperless.W003) → `auto`.
+  Konsequenz: Image-Version gepinnt (3.5.1) statt `latest`.
