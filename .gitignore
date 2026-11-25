@@ -1,0 +1,4 @@
+.env
+consume/
+export/
+.DS_Store
