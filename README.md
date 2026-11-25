@@ -22,3 +22,22 @@ Web-UI nur an 127.0.0.1 gebunden.
   (u. a. compose) waren tote Symlinks. Lösung: Docker Desktop einmal starten.
 - `PAPERLESS_OCR_MODE=skip` ist ab v3 ungültig (Warnung paperless.W003) → `auto`.
   Konsequenz: Image-Version gepinnt (3.5.1) statt `latest`.
+
+## Backup
+    docker compose exec -T webserver document_exporter ../export
+
+## API-Zugang für n8n
+Eigener Benutzer `n8n` ohne Admin-Rechte. Minimalrechte: Dokument anzeigen/hinzufügen;
+Tags, Korrespondenten, Dokumenttypen anzeigen; Tasks anzeigen.
+Token via `manage.py drf_create_token n8n`, gespeichert im Passwortmanager, nicht im Repo.
+Upload ist asynchron: `post_document` liefert nur eine Task-ID, Erfolg erst über `/api/tasks/`.
+
+## Weitere Stolperstellen
+- API-Benutzer `n8n` bekam beim Abfragen von `/api/tasks/` HTTP 403. Ohne dieses Recht kann
+  n8n nicht prüfen, ob ein Upload erfolgreich war. Lösung: zusätzlich „Task: anzeigen“.
+- **Duplikate werden in v3.5.1 angenommen.** Test: dieselbe PDF erneut über die API
+  hochgeladen → Task `success`, neues Dokument. Die Annahme aus älteren Versionen
+  (Ablehnung per Prüfsumme) gilt nicht mehr. Konsequenz: Deduplizierung vollständig
+  in n8n (Message-ID + SHA-256 des Anhangs, Unique-Constraint in Postgres).
+  Zusätzlich sieht der n8n-Benutzer fremde Dokumente nicht, eine Prüfung über die
+  Paperless-API wäre also ohnehin lückenhaft.
