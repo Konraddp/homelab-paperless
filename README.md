@@ -41,3 +41,6 @@ Upload ist asynchron: `post_document` liefert nur eine Task-ID, Erfolg erst übe
   in n8n (Message-ID + SHA-256 des Anhangs, Unique-Constraint in Postgres).
   Zusätzlich sieht der n8n-Benutzer fremde Dokumente nicht, eine Prüfung über die
   Paperless-API wäre also ohnehin lückenhaft.
+- n8n (eigener Stack, im Docker-Netz `paperless_default`) bekam HTTP 400: Django lässt nur
+  Hostnamen aus `ALLOWED_HOSTS` zu, abgeleitet aus `PAPERLESS_URL` (nur `localhost`).
+  Lösung: `PAPERLESS_ALLOWED_HOSTS=localhost,webserver`.
